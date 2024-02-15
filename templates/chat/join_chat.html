@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h1>Join_chat Page</h1>
+    <form action="{% url 'chat' chat.unique_code %}" method="post">
+        {% csrf_token %}
+        <button type="submit">join chat</button>
+    </form>
+{% endblock %}

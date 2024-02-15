@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h1>Index Page</h1>
+    <ul>
+        {% for member in members %}
+            <li>
+                <a href="{% url 'chat' member.chat.unique_code %}">
+                    <span>creator: {{ member.chat.creator.username }}</span><br><span>chat: {{ member.chat.unique_code }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    <form action="{% url 'create_chat'  %}" method="post">
+        {% csrf_token %}
+        <label for="chat-name-input">chat title:</label>
+        <input id="chat-name-input" type="text" name="group_name">
+        <button type="submit">create</button>
+    </form>
+{% endblock %}

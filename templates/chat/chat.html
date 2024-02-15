@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h1>Chat Page</h1>
+    <ul>
+        <li>chat id: {{ chat.id }}</li>
+        <li>creator: {{ chat.creator.username }}</li>
+        <li>chat code: {{ chat.unique_code }}</li>
+        <li>created_time: {{ chat.created_time }}</li>
+    </ul>
+    <div id="message-container">
+        {% for message in messages %}
+            <p>{{ message.sender }} : {{ message.text }} ---- {{ chat.created_time }}</p>
+        {% endfor %}
+    </div>
+    {#    <form action=".">#}
+    <label for="text-input"></label>
+    <input type="text" id="text-input" name="text">
+    <button id="send-msg" type="submit">send</button>
+    {#    </form>#}
+{% endblock %}
+{% block script %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const messages = document.getElementById('message-container')
+            const text = document.getElementById('text-input')
+            const sendBtn = document.getElementById('send-msg')
+            const socket = new WebSocket('ws://'+window.location.host+'/ws/chat/'+'{{ chat.unique_code }}'+'/')
+            socket.onopen = () => {
+                console.log('socket opened')
+            }
+            socket.onmessage = (e) => {
+                const data = JSON.parse(e.data)
+                const msg = document.createElement('p')
+                if (data.message_type === 'msg')
+                    msg.innerText = `${data.sender} : ${data.text}`
+                else msg.innerText = `${data.text}`
+                messages.append(msg)
+                console.log(data)
+            }
+            socket.onclose = () => {
+                alert('socket closed!')
+            }
+            sendBtn.onclick = (e) => {
+                socket.send(JSON.stringify({'text': text.value, 'message_type': 'msg'}))
+                text.value = ''
+            }
+        })
+    </script>
+{% endblock %}

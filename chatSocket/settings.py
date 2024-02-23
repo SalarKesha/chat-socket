@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'daphne',
     'chat',
+    'video_chat',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -73,7 +74,8 @@ ASGI_APPLICATION = 'chatSocket.asgi.application'
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "BACKEND": "chatSocket.redis_layer.ExtendedRedisChannelLayer",
         "CONFIG": {
             "hosts": [("127.0.0.1", 6379)],
         },

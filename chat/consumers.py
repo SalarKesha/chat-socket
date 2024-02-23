@@ -1,10 +1,11 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
-
 from chat.models import Message, GroupChat
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
+    group_users = dict()
+
     async def connect(self):
         self.user = self.scope['user']
         self.chat_id = self.scope["url_route"]["kwargs"]["chat_id"]
@@ -16,6 +17,17 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.channel_layer.group_send(self.chat_room_id,
                                                 {'type': 'chat_message', 'text': f'{self.user} joined the chat',
                                                  'message_type': self.message_types['join']})
+            # if result := self.group_users.get(self.chat_room_id, None):
+            #     if self.user not in result:
+            #         self.group_users[self.chat_room_id].append(self.user)
+            #         print("=========")
+            #         print(self.group_users)
+            #         print("=========")
+            # else:
+            #     self.group_users[self.chat_room_id] = [self.user]
+            #     print("=========")
+            #     print(self.group_users)
+            #     print("=========")
         else:
             await self.close()
 
@@ -32,6 +44,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                                              'sender': self.user.username, 'message_type': self.message_types['msg']})
 
     async def chat_message(self, event):
+        # channel_names = await self.channel_layer.get_group_channels(self.chat_room_id)
+        # print(self.group_users)
         if event.get('sender', False):
             await self.send_json(
                 {'text': event.get('text'), 'sender': event['sender'], 'message_type': event.get('message_type')},

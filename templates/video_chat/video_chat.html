@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <h1>Video Chat</h1>
+    <video id="video_send" autoplay muted>video-send</video>
+    <video id="video_receive" autoplay>video_receive</video>
+    <ul>
+    {% for call in call_logs %}
+        <li>started: {{ call.started_time }} - finished {{ call.finished_time }} - caller: {{ call.caller.username }} - callee: {{ call.callee.username }}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}
+
